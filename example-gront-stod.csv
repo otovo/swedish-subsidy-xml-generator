@@ -1,0 +1,2 @@
+FakturaNr,Kopare,Fastighetsbeteckning,TypAvUtfortArbete,AntalTimmar,Kostnad,OvrigKostnad,Betalningsdatum,BetaltBelopp,BegartBelopp
+12345,199001011234,HUSET 1,INSTALLATION_SOLCELLER,25,50000,0,2023-01-01,80000,10000
