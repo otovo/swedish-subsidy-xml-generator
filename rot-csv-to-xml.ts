@@ -1,22 +1,7 @@
 #!/usr/bin/env node
 
-import fs from 'fs';
-import csv from 'fast-csv';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { parseString } from 'fast-csv';
 import { XMLBuilder, XMLParser } from 'fast-xml-parser';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-let data = [];
-
-const sourceFileName = process.argv[2];
-const targetFileName = `${sourceFileName.split('.')[0]}-${new Date(Date.now()).toISOString()}.xml`;
-
-if (!sourceFileName) {
-  console.log('Please specify the name of the file to be parsed');
-}
 
 const formatRow = (row) => {
   let utfortArbete = {};
@@ -49,7 +34,7 @@ const convertToXml = (data) => {
     <ns1:Begaran xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:ns1="http://xmls.skatteverket.se/se/skatteverket/ht/begaran/6.0"
       xmlns:ns2="http://xmls.skatteverket.se/se/skatteverket/ht/komponent/begaran/6.0">
-      <ns2:NamnPaBegaran>${targetFileName}</ns2:NamnPaBegaran>
+      <ns2:NamnPaBegaran>Otovo</ns2:NamnPaBegaran>
       <ns2:RotBegaran>
         ${arendenBuilder.build(data)}
       </ns2:RotBegaran>
@@ -65,30 +50,18 @@ const convertToXml = (data) => {
   return builder.build(parser.parse(xml));
 };
 
-const exportAsXml = (xml) => {
-  fs.writeFile(
-    path.resolve(__dirname, 'documents', targetFileName),
-    xml,
-    { flag: 'w' },
-    function (err) {
-      if (err) throw err;
-      console.log(`${targetFileName} was generated from ${sourceFileName}`);
-    }
-  );
-};
-
-fs.createReadStream(path.resolve(__dirname, sourceFileName))
-  .pipe(
-    csv.parse({
-      headers: (headers) => headers.map((header) => `ns2:${header}`),
-    })
-  )
-  .on('error', (error) => console.error(error))
-  .on('data', (row) => {
-    const item = formatRow(row);
-    data.push(item);
-  })
-  .on('end', () => {
-    const xml = convertToXml(data);
-    exportAsXml(xml);
+export default async function (csvContent): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const elems = [];
+    parseString(csvContent, { headers: true })
+      .on('error', (error) => reject(error))
+      .on('data', (row) => {
+        // @ts-ignore
+        elems.push(formatRow(row));
+      })
+      .on('end', (rowCount: number) => {
+        const xml = convertToXml(elems);
+        resolve(xml);
+      });
   });
+}
