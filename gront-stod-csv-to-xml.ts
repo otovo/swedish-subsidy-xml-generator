@@ -1,23 +1,7 @@
 #!/usr/bin/env node
 
-import fs from 'fs';
-import csv from 'fast-csv';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { parseString } from 'fast-csv';
 import { XMLBuilder, XMLParser } from 'fast-xml-parser';
-import process  from 'process';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-let data = [];
-
-const sourceFileName = process.argv[2];
-const targetFileName = `${sourceFileName.split('.')[0]}-${new Date(Date.now()).toISOString()}.xml`;
-
-if (!sourceFileName) {
-  console.log('Please specify the name of the file to be parsed');
-}
 
 const formatRow = (row) => {
   if (row['p:Fastighetsbeteckning']) {
@@ -90,30 +74,18 @@ const convertToXml = (data) => {
   return builder.build(parser.parse(xml));
 };
 
-const exportAsXml = (xml) => {
-  fs.writeFile(
-    path.resolve(__dirname, 'documents', targetFileName),
-    xml,
-    { flag: 'w' },
-    function (err) {
-      if (err) throw err;
-      console.log(`Exported as ${targetFileName}`);
-    }
-  );
-};
-
-fs.createReadStream(path.resolve(__dirname, sourceFileName))
-  .pipe(
-    csv.parse({
-      headers: (headers) => headers.map((header) => `p:${header}`),
-    })
-  )
-  .on('error', (error) => console.error(error))
-  .on('data', (row) => {
-    const item = formatRow(row);
-    data.push(item);
-  })
-  .on('end', () => {
-    const xml = convertToXml(data);
-    exportAsXml(xml);
+export default async function (csvContent): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const elems = [];
+    parseString(csvContent, { headers: true })
+      .on('error', (error) => reject(error))
+      .on('data', (row) => {
+        // @ts-ignore
+        elems.push(formatRow(row));
+      })
+      .on('end', (rowCount: number) => {
+        const xml = convertToXml(elems);
+        resolve(xml);
+      });
   });
+}
