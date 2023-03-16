@@ -21,6 +21,15 @@ const IndexPage = () => {
 
   return (
     <>
+      <h1>Claim ROT and Grön Stöd via XML</h1>
+      <p>
+        This webapp helps you create the XML files to claim subsidies from the
+        Swedish government. Please read{' '}
+        <a href="https://www.notion.so/otovo/Claim-ROT-and-Gr-n-St-d-via-XML-317a0e0793d04305b15a06b82d382ee0">
+          the documentation
+        </a>{' '}
+        for more information.
+      </p>
       <pre>{xmlResponse}</pre>
       <h1>Paste your CSV and hit submit</h1>
       <form>
