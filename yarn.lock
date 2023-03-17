@@ -302,3 +302,15 @@ typescript@^4.9.5:
   version "4.9.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
   integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
+
+xml-formatter@^3.3.2:
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/xml-formatter/-/xml-formatter-3.3.2.tgz#1b12a1cda796ad94821fadcc0237c9f8db7d5169"
+  integrity sha512-ld34F1b7+2UQGNkfsAV4MN3/b7cdUstyMj3XJhzKFasOPtMToVCkqmrNcmrRuSlPxgH1K9tXPkqr75gAT3ix2g==
+  dependencies:
+    xml-parser-xo "^4.0.3"
+
+xml-parser-xo@^4.0.3:
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/xml-parser-xo/-/xml-parser-xo-4.0.5.tgz#58de932b1eae1c5864e6ee99a25266d1dd1f257f"
+  integrity sha512-UWXOHMQ4ySxpUiU3S/9KzPOhninlL8SN1xFfWgX9WjgoZWoLKtEeJIEz4jhKtdFsoZBCYjg9rDEP3qfnpiHagQ==

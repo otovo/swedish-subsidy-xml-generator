@@ -2,6 +2,7 @@
 
 import { parseString } from 'fast-csv';
 import { XMLBuilder, XMLParser } from 'fast-xml-parser';
+import xmlFormat from 'xml-formatter';
 
 const formatRow = (row) => {
   let utfortArbete = {};
@@ -41,13 +42,7 @@ const convertToXml = (data) => {
     </ns1:Begaran>
   `;
 
-  // Hack to format the xml by parsing the xml string, then building the xml again
-  const parser = new XMLParser();
-  const builder = new XMLBuilder({
-    format: true,
-    suppressEmptyNode: true,
-  });
-  return builder.build(parser.parse(xml));
+  return xmlFormat(xml);
 };
 
 export default async function (csvContent): Promise<string> {
