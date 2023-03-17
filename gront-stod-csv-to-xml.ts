@@ -40,9 +40,7 @@ const formatRow = (row) => {
   if (Object.keys(utfortArbete).length) {
     return {
       ...row,
-      'p:UtfortArbete': {
-        'p:GlasPlatarbete': utfortArbete,
-      },
+      'p:UtfortArbete': utfortArbete
     };
   }
   return row;
@@ -55,23 +53,36 @@ const convertToXml = (data) => {
     suppressEmptyNode: true,
   });
   const xml = `
+    <?xml version="1.0" encoding="UTF-8"?>
     <p:Begaran xmlns:p="http://xmls.skatteverket.se/se/skatteverket/skattered/begaran/1.0"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         <p:NamnPaBegaran>GrönTeknik</p:NamnPaBegaran>
         <p:TypAvBegaran>GRON_TEKNIK</p:TypAvBegaran>
         <p:Utforare>5591266092</p:Utforare>
-        <p:RotBegaran>
-            ${arendenBuilder.build(data)}
-        </p:RotBegaran>
+          ${arendenBuilder.build(data)}
     </p:Begaran>
   `;
-  return xmlFormat(xml);
+  return xmlFormat(xml, { collapseContent: true });
 };
 
 export default async function (csvContent): Promise<string> {
   return new Promise((resolve, reject) => {
     const elems = [];
-    parseString(csvContent, { headers: true })
+    parseString(csvContent, {
+      headers: [
+        'p:FakturaNr',
+        'p:Kopare',
+        'p:Fastighetsbeteckning',
+        'p:TypAvUtfortArbete',
+        'p:AntalTimmar',
+        'p:Kostnad',
+        'p:OvrigKostnad',
+        'p:Betalningsdatum',
+        'p:BetaltBelopp',
+        'p:BegartBelopp',
+      ],
+      renameHeaders: true,
+    })
       .on('error', (error) => reject(error))
       .on('data', (row) => {
         // @ts-ignore

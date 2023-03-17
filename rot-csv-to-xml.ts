@@ -32,6 +32,7 @@ const convertToXml = (data) => {
     suppressEmptyNode: true,
   });
   const xml = `
+    <?xml version="1.0" encoding="UTF-8"?>
     <ns1:Begaran xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:ns1="http://xmls.skatteverket.se/se/skatteverket/ht/begaran/6.0"
       xmlns:ns2="http://xmls.skatteverket.se/se/skatteverket/ht/komponent/begaran/6.0">
@@ -42,13 +43,27 @@ const convertToXml = (data) => {
     </ns1:Begaran>
   `;
 
-  return xmlFormat(xml);
+  return xmlFormat(xml, { collapseContent: true });
 };
 
 export default async function (csvContent): Promise<string> {
   return new Promise((resolve, reject) => {
     const elems = [];
-    parseString(csvContent, { headers: true })
+    parseString(csvContent, {
+      headers: [
+        'ns2:Kopare',
+        'ns2:BetalningsDatum',
+        'ns2:PrisForArbete',
+        'ns2:BetaltBelopp',
+        'ns2:BegartBelopp',
+        'ns2:FakturaNr',
+        'ns2:Ovrigkostnad',
+        'ns2:Fastighetsbeteckning',
+        'ns2:AntalTimmar',
+        'ns2:Materialkostnad',
+      ],
+      renameHeaders: true,
+    })
       .on('error', (error) => reject(error))
       .on('data', (row) => {
         // @ts-ignore
