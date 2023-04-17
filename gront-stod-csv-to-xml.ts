@@ -29,7 +29,7 @@ const formatRow = (row) => {
       [headerKeys[4]]: row[headerKeys[4]],
       [headerKeys[5]]: row[headerKeys[5]],
     },
-    [headerKeys[4]]: row[headerKeys[4]],
+    [headerKeys[6]]: row[headerKeys[6]],
     [headerKeys[7]]: row[headerKeys[7]],
     [headerKeys[8]]: row[headerKeys[8]],
     [headerKeys[9]]: row[headerKeys[9]],
