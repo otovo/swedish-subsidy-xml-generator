@@ -14,7 +14,6 @@ const IndexPage = () => {
         'content-type': 'text/plain',
       },
     });
-    setTextAreaContent('');
     const text = await response.text();
     setXmlResponse(text);
   }
@@ -36,6 +35,7 @@ const IndexPage = () => {
         <textarea
           cols={100}
           rows={20}
+          value={textAreaContent}
           onChange={(e) => setTextAreaContent(e.target.value)}
         />
         <br />
