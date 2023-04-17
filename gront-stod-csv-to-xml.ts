@@ -1,49 +1,39 @@
 #!/usr/bin/env node
 
 import { parseString } from 'fast-csv';
-import { XMLBuilder, XMLParser } from 'fast-xml-parser';
+import { XMLBuilder } from 'fast-xml-parser';
 import xmlFormat from 'xml-formatter';
 
+const headerKeys = [
+  'p:FakturaNr',
+  'p:Kopare',
+  'p:Fastighetsbeteckning',
+  'p:TypAvUtfortArbete',
+  'p:AntalTimmar',
+  'p:Kostnad',
+  'p:OvrigKostnad',
+  'p:Betalningsdatum',
+  'p:BetaltBelopp',
+  'p:BegartBelopp',
+];
+
 const formatRow = (row) => {
-  if (row['p:Fastighetsbeteckning']) {
-    row = {
-      ...row,
-      'p:Fastighet': {
-        'p:Fastighetsbeteckning': row['p:Fastighetsbeteckning'],
-      },
-    };
-    delete row['p:Fastighetsbeteckning'];
+  return {
+    [headerKeys[0]]: row[headerKeys[0]],
+    [headerKeys[1]]: row[headerKeys[1]],
+    'p:Fastighet': {
+      [headerKeys[2]]: row[headerKeys[2]],
+    },
+    'p:UtfortArbete': {
+      [headerKeys[3]]: row[headerKeys[3]],
+      [headerKeys[4]]: row[headerKeys[4]],
+      [headerKeys[5]]: row[headerKeys[5]],
+    },
+    [headerKeys[4]]: row[headerKeys[4]],
+    [headerKeys[7]]: row[headerKeys[7]],
+    [headerKeys[8]]: row[headerKeys[8]],
+    [headerKeys[9]]: row[headerKeys[9]],
   }
-
-  let utfortArbete = {};
-  if (row['p:TypAvUtfortArbete']) {
-    utfortArbete = {
-      'p:TypAvUtfortArbete': row['p:TypAvUtfortArbete'],
-    };
-    delete row['p:TypAvUtfortArbete'];
-  }
-  if (row['p:AntalTimmar']) {
-    utfortArbete = {
-      ...utfortArbete,
-      'p:AntalTimmar': row['p:AntalTimmar'],
-    };
-    delete row['p:AntalTimmar'];
-  }
-  if (row['p:Kostnad']) {
-    utfortArbete = {
-      ...utfortArbete,
-      'p:Kostnad': row['p:Kostnad'],
-    };
-    delete row['p:Kostnad'];
-  }
-
-  if (Object.keys(utfortArbete).length) {
-    return {
-      ...row,
-      'p:UtfortArbete': utfortArbete
-    };
-  }
-  return row;
 };
 
 const convertToXml = (data) => {
@@ -69,18 +59,7 @@ export default async function (csvContent): Promise<string> {
   return new Promise((resolve, reject) => {
     const elems = [];
     parseString(csvContent, {
-      headers: [
-        'p:FakturaNr',
-        'p:Kopare',
-        'p:Fastighetsbeteckning',
-        'p:TypAvUtfortArbete',
-        'p:AntalTimmar',
-        'p:Kostnad',
-        'p:OvrigKostnad',
-        'p:Betalningsdatum',
-        'p:BetaltBelopp',
-        'p:BegartBelopp',
-      ],
+      headers: headerKeys,
       renameHeaders: true,
     })
       .on('error', (error) => reject(error))
